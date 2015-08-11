@@ -38,6 +38,7 @@ public class MainActivity extends Activity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
+
     GoogleMap mGoogleMap;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
@@ -138,9 +139,24 @@ public class MainActivity extends Activity implements
 
     }
 
+    public void drawMarkersFor(ArrayList<ChaseLocation> location) {
+        Log.d("MainActivity", "Locations" + location.size());
+        LatLng ll;
+        for (int i = 0; i < location.size(); i++) {
 
+            ChaseLocation loc = location.get(i);
+            ll = new LatLng(Double.parseDouble(loc.lat), Double.parseDouble(loc.lng));
 
-    class ChaseApiRequestTask extends AsyncTask<LatLng, Void, Void>{
+            MarkerOptions options = new MarkerOptions()
+                    .title(loc.name)
+                    .snippet(loc.address)
+                    .position(ll);
+            mGoogleMap.addMarker(options);
+        }
+
+    }
+
+    class ChaseApiRequestTask extends AsyncTask<LatLng, Void, Void> {
 
         String chaseURL = "https://m.chase.com/PSRWeb/location/list.action?";
         ArrayList<ChaseLocation> locationsList;
@@ -149,7 +165,7 @@ public class MainActivity extends Activity implements
         protected Void doInBackground(LatLng... params) {
             // TODO Auto-generated method stub
             LatLng userLocation = params[0];
-            String theUrlString = chaseURL+"lat="+userLocation.latitude+"&lng="+userLocation.longitude;
+            String theUrlString = chaseURL + "lat=" + userLocation.latitude + "&lng=" + userLocation.longitude;
             locationsList = new ArrayList<MainActivity.ChaseLocation>();
 
             Log.d("MainActivity", "Downloading Data:::" + theUrlString);
@@ -217,31 +233,13 @@ public class MainActivity extends Activity implements
 
     }
 
-    public void drawMarkersFor(ArrayList<ChaseLocation> location){
-        Log.d("MainActivity", "Locations"+location.size());
-        LatLng ll;
-        for(int i=0;i <location.size();i++){
-
-            ChaseLocation loc = location.get(i);
-            ll = new LatLng(Double.parseDouble(loc.lat), Double.parseDouble(loc.lng));
-
-            MarkerOptions options = new MarkerOptions()
-                    .title(loc.name)
-                    .snippet(loc.address)
-                    .position(ll);
-            mGoogleMap.addMarker(options);
-        }
-
-    }
-
-
     class ChaseLocation {
         String locationType;
         double distance;
         String name, address;
         String lat, lng;
 
-        ChaseLocation(String locType, double dist, String name, String address, String lat, String lng){
+        ChaseLocation(String locType, double dist, String name, String address, String lat, String lng) {
             this.locationType = locType;
             this.distance = dist;
             this.name = name;
